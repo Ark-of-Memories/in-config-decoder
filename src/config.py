@@ -43,7 +43,7 @@ def decode_configs(I_N_CORE_DATA_PATH, is_repo = False, version = ''):
             local t = {}\n\
             rawset(t, "_type", "list")\n\
             return t\n\
-        end').replace('list = UENewTable', 'list = UENewList').replace('local map = {}', ''))
+        end').replace('list = UENewTable', 'list = UENewList').replace('local map = {}', '').replace('if o and type(o) == "table" then', 'if o and type(o) == "table" and false then'))
 
     init_function = config.InitTypes
 

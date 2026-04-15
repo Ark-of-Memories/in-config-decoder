@@ -6,18 +6,8 @@ import subprocess
 
 LOCALES = [
     'zh',
-    'zh-Hant',
     'zh-SG', # Singapore Chinese is actually the same as Simplified Chinese
-    'en',
-    'ja-JP',
-    'ko',
-    'th',
-    'id',
-    'pt',
-    'es',
-    'fr',
-    'de',
-    'it',
+    'en'
 ]
 
 def decode_locres(I_N_CORE_DATA_PATH):

@@ -19,11 +19,11 @@ methods = {
     'readBool': ByteBuf.read_bool,
     'readByte': ByteBuf.read_byte,
     'readShort': ByteBuf.read_short,
-    'readFshort': ByteBuf.read_short, # todo
+    'readFshort': ByteBuf.read_fixed_short,
     'readInt': ByteBuf.read_int,
-    'readFint': ByteBuf.read_int, # todo
+    'readFint': ByteBuf.read_fixed_int,
     'readLong': read_long_modified,
-    'readFlong': read_long_modified, # todo
+    'readFlong': ByteBuf.read_fixed_long,
     'readFloat': ByteBuf.read_float,
     'readDouble': ByteBuf.read_double,
     'readSize': ByteBuf.read_int,
@@ -43,7 +43,7 @@ def decode_configs(I_N_CORE_DATA_PATH, is_repo = False, version = ''):
             local t = {}\n\
             rawset(t, "_type", "list")\n\
             return t\n\
-        end').replace('list = UENewTable', 'list = UENewList').replace('local map = {}', '').replace('if o and type(o) == "table" then', 'if o and type(o) == "table" and false then'))
+        end').replace('list = UENewTable', 'list = UENewList').replace('if o and type(o) == "table" then', 'if o and type(o) == "table" and false then'))
 
     init_function = config.InitTypes
 

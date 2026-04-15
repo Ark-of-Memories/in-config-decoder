@@ -52,9 +52,14 @@ def transform_size_array(array):
 
 def read_lua_string(file):
     size = read_size(file)
+    result = None
     if size == 0:
-        return None
-    return file.read(size - 1).decode('utf-8')
+        return result
+    try:
+        result = file.read(size - 1).decode('utf-8')
+    except:
+        print('Failed to decode file!')
+    return result
 
 def read_constant(file):
     type_byte = struct.unpack('<B', file.read(1))[0]
@@ -176,7 +181,8 @@ def decode_lua_bytecode(output_base, full_file_path):
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path + 'c', 'wb') as f:
         f.write(data)
-    subprocess.run(['java', '-jar', 'unluac.jar', output_path + 'c', '>', output_path], shell=True)
+    subprocess.run(['java', '-jar', 'unluac.jar', '--rawstring', output_path + 'c', '--output', os.path.abspath(output_path)])
+    os.remove(output_path + 'c')
 
 def decode_luas(I_N_DATA_PATH):
     output_base = r'cfg/script'

@@ -52,9 +52,14 @@ def transform_size_array(array):
 
 def read_lua_string(file):
     size = read_size(file)
+    result = None
     if size == 0:
-        return None
-    return file.read(size - 1).decode('utf-8')
+        return result
+    try:
+        result = file.read(size - 1).decode('utf-8')
+    except:
+        print('Failed to decode file!')
+    return result
 
 def read_constant(file):
     type_byte = struct.unpack('<B', file.read(1))[0]
@@ -134,6 +139,10 @@ def read_lua_file(file):
     header_data = file.read(header_size)
     header = struct.unpack(header_format, header_data)
 
+    if header[0] != 1635077147:
+        print("File is not a compiled Lua bytecode!")
+        return None
+
     size_of_upvalues = struct.unpack('<B', file.read(1))[0]
     func = read_lua_function(file)
 
@@ -159,6 +168,9 @@ def fix_function(data, func):
 def fix_lua_bytecode(filename):
     lua_bytecode = parse_lua_bytecode(filename)
 
+    if lua_bytecode == None:
+        return None, None
+
     with open(filename, 'rb') as file:
         data = bytearray(file.read())
     # data[4] = 84
@@ -172,20 +184,23 @@ def decode_lua_bytecode(output_base, full_file_path):
         return None
     print(f'Decoding {os.path.basename(full_file_path)}')
     output_path, data = fix_lua_bytecode(full_file_path)
+    if output_path == None:
+        return None
     output_path = os.path.join(output_base, output_path)
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with open(output_path + 'c', 'wb') as f:
         f.write(data)
-    subprocess.run(['java', '-jar', 'unluac.jar', output_path + 'c', '>', output_path], shell=True)
+    subprocess.run(['java', '-jar', 'unluac.jar', '--rawstring', output_path + 'c', '--output', os.path.abspath(output_path)])
+    os.remove(output_path + 'c')
 
 def decode_luas(I_N_DATA_PATH):
     output_base = r'cfg/script'
-    script_path = os.path.join(I_N_DATA_PATH, r'X6Game/Content/Script')
+    script_path = os.path.join(I_N_DATA_PATH, r'lua/X6Game/Content/Script')
 
     lua_files = [
         os.path.join(root, file)
         for root, _, files in os.walk(script_path)
-        for file in files if file.endswith('.lua')
+        for file in files if "." not in file
     ]
 
     completed = 0

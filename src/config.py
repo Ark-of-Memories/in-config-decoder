@@ -154,27 +154,30 @@ def decode_configs(I_N_CORE_DATA_PATH, is_repo = False, version = ''):
             registry=registry
         )
         print('Loading', table.file)
-        loaded_table = config_table.load(os.path.join(I_N_CORE_DATA_PATH, r'X6Game/Content/config_output'))
-        # print(loaded_table)
+        try:
+            loaded_table = config_table.load(os.path.join(I_N_CORE_DATA_PATH, r'config/X6Game/Content/config_output'))
+            # print(loaded_table)
 
-        if table.mode == 'map':
-            for key, value in loaded_table.items():
-                loaded_table[key] = value.cache
-        elif table.mode == 'bmap':
-            for key, value in loaded_table.items():
-                for k, v in value.items():
-                    loaded_table[key][k] = v.cache
-        elif table.mode == 'one':
-            loaded_table = loaded_table.cache
+            if table.mode == 'map':
+                for key, value in loaded_table.items():
+                    loaded_table[key] = value.cache
+            elif table.mode == 'bmap':
+                for key, value in loaded_table.items():
+                    for k, v in value.items():
+                        loaded_table[key][k] = v.cache
+            elif table.mode == 'one':
+                loaded_table = loaded_table.cache
 
-        if is_repo:
-            os.makedirs('cfg/repo/ConfigOutput/', exist_ok=True)
-            with open(f'cfg/repo/ConfigOutput/{table.file.replace(".bin", ".json")}', 'w', encoding='utf-8') as f:
-                json.dump(loaded_table, f, ensure_ascii=False, indent=2)
-        else:
-            os.makedirs(f'cfg/config_output/{table.value_type.split(".")[0]}', exist_ok=True)
-            with open(f'cfg/config_output/{table.file.replace(".bin", ".json").replace(".", "/", 1)}', 'w', encoding='utf-8') as f:
-                json.dump(loaded_table, f, ensure_ascii=False, indent=2)
+            if is_repo:
+                os.makedirs('cfg/repo/ConfigOutput/', exist_ok=True)
+                with open(f'cfg/repo/ConfigOutput/{table.file.replace(".bin", ".json")}', 'w', encoding='utf-8') as f:
+                    json.dump(loaded_table, f, ensure_ascii=False, indent=2)
+            else:
+                os.makedirs(f'cfg/config_output/{table.value_type.split(".")[0]}', exist_ok=True)
+                with open(f'cfg/config_output/{table.file.replace(".bin", ".json").replace(".", "/", 1)}', 'w', encoding='utf-8') as f:
+                    json.dump(loaded_table, f, ensure_ascii=False, indent=2)
+        except FileNotFoundError:
+            print('Table not found!')
 
 
 def decode_helper(I_N_CORE_DATA_PATH, version = ''):

@@ -1,8 +1,7 @@
 import os
 import argparse
 
-from src.i18n import decode_locres
-from src.lua import decode_luas, decode_lua_bytecode
+from src.lua import decode_luas, decode_lua_bytecode, decode_gf_luas
 from src.config import decode_configs, decode_helper
 from src.sound import generate_bank_data, load_bank_xml, resort_event_wems
 
@@ -45,6 +44,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.decode_luas == True:
         decode_luas(I_N_CORE_DATA_PATH)
+        decode_gf_luas(I_N_CORE_DATA_PATH)
     else:
         decode_infinity_nikki_data_repo(I_N_CORE_DATA_PATH)
         decode_just_helper(I_N_CORE_DATA_PATH)

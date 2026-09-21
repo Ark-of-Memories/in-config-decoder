@@ -1,6 +1,7 @@
 import os
 import struct
 import subprocess
+from pathlib import Path
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
@@ -193,9 +194,9 @@ def decode_lua_bytecode(output_base, full_file_path):
     subprocess.run(['java', '-jar', 'unluac.jar', '--rawstring', output_path + 'c', '--output', os.path.abspath(output_path)])
     os.remove(output_path + 'c')
 
-def decode_luas(I_N_DATA_PATH):
-    output_base = r'cfg/script'
-    script_path = os.path.join(I_N_DATA_PATH, r'lua/X6Game/Content/Script')
+def decode_luas(I_N_DATA_PATH, output_base = r'cfg/script', script_path = ''):
+    if not script_path:
+        script_path = os.path.join(I_N_DATA_PATH, r'lua/X6Game/Content/Script')
 
     lua_files = [
         os.path.join(root, file)
@@ -213,3 +214,13 @@ def decode_luas(I_N_DATA_PATH):
             completed += 1
 
             print(f"{completed} / {len(lua_files)}")
+
+def decode_gf_luas(I_N_DATA_PATH):
+    gf_path = Path(I_N_DATA_PATH, r'lua/X6Game/Plugins/GameFeatures')
+    scriptDirectories = [x for x in gf_path.rglob('*') if x.is_dir() and x.name == "Script"]
+
+    for scriptDir in scriptDirectories:
+        # The GameFeature name is always two levels below the "Script" directory.
+        gf_name = scriptDir.parent.parent.name
+        output_base = r'cfg/script/GF/' + gf_name
+        decode_luas(I_N_DATA_PATH, output_base, scriptDir)
